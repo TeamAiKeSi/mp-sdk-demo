@@ -1,0 +1,19 @@
+{
+  "pages": [
+    "pages/index/index"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#fff",
+    "navigationBarTitleText": "Weixin",
+    "navigationBarTextStyle": "black"
+  },
+  "plugins": {
+    "vation-mp-plugin": {
+      "version": "dev-24d9a7c2d9b9ee6e867e4e8966549e0b",
+      "provider": "wxd96719ab77400d1a"
+    }
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

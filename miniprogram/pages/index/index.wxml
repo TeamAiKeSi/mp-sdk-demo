@@ -1,0 +1,35 @@
+<view class="container">
+    <view class="input">
+        <view>
+            <text>邮箱：</text>
+            <input value="{{email}}" placeholder="请输入邮箱" bindinput="inputEmail" />
+        </view>
+        <view>
+            <text>验证码：</text>
+            <input value="{{code}}" placeholder="请输入验证码" bindinput="inputCode" />
+        </view>
+        <view>
+            <text>auth_token：</text>
+            <input value="{{auth_token}}" maxlength="-1" placeholder="请输入auth_token" bindinput="inputAuthToken" />
+        </view>
+        <view>
+            <text>app_key：</text>
+            <input value="{{app_key}}" placeholder="请输入app_key" bindinput="inputAppKey" />
+        </view>
+    </view>
+    <button bindtap="getCode">获取验证码</button>
+    <button bindtap="codeLogin">验证码登录</button>
+    <button bindtap="thirdPartyLogin">第三方登录</button>
+    <button bindtap="refreshToken">刷新token</button>
+    <!-- <button bindtap="checkLogin">检查登录状态</button> -->
+    <!-- <button bindtap="getUser">获取用户信息</button> -->
+    <button bindtap="openBlueTooth">开启蓝牙服务</button>
+    <button bindtap="closeBlueTooth">关闭蓝牙服务</button>
+
+    <view wx:for="{{readers}}" wx:key="index">
+        <view>
+            <view>{{item.name}} - {{item.fixtureId}}</view>
+            <button data-id="{{item.fixtureId}}" bindtap="unlock">开锁</button>
+        </view>
+    </view>
+</view>
