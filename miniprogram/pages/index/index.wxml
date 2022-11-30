@@ -21,15 +21,15 @@
     <button bindtap="codeLogin">验证码登录</button>
     <button bindtap="thirdPartyLogin">第三方登录</button>
     <button bindtap="refreshToken">刷新token</button>
-    <!-- <button bindtap="checkLogin">检查登录状态</button> -->
-    <!-- <button bindtap="getUser">获取用户信息</button> -->
+    <button bindtap="checkLogin">检查登录状态</button>
+    <button bindtap="getUser">获取用户信息</button>
     <button bindtap="openBlueTooth">开启蓝牙服务</button>
     <button bindtap="closeBlueTooth">关闭蓝牙服务</button>
 
-    <view wx:for="{{readers}}" wx:key="index">
+    <view wx:for="{{readerList}}" wx:key="index">
         <view>
-            <view>{{item.name}} - {{item.fixtureId}}</view>
-            <button data-id="{{item.fixtureId}}" bindtap="unlock">开锁</button>
+            <view>{{item.reader.name}}</view>
+            <button data-id="{{item.deviceId}}" bindtap="unlock">开门</button>
         </view>
     </view>
 </view>

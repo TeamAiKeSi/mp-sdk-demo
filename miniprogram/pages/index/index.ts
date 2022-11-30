@@ -1,138 +1,109 @@
-const app = getApp<IAppOption>()
-const VationSDK = requirePlugin('vation-mp-plugin')
+const app = getApp<IAppOption>();
+const VationXSDK = requirePlugin("vation-mp-plugin");
 Page({
-    data: {
-        email: '',
-        code: '',
-        auth_token: '',
-        app_key: '',
-        userInfo: {},
-        readerList: {},
-        readers: [],
-    },
+  data: {
+    email: "zekun@vationx.com",
+    code: "828466",
+    auth_token: "",
+    app_key: "",
+    userInfo: {},
+    readerList: [],
+  },
 
-    onLoad() {
-        console.log(VationSDK, 'VationSDK');
+  onLoad() {
+    console.log(VationXSDK, "VationXSDK");
+    this.init();
+  },
 
-        this.init()
-    },
+  init() {
+    VationXSDK.initSDK(); // 成功：'success'，失败：'fail'，注意：初始化成功后，才能正常开门。
+  },
 
-    init() {
-        VationSDK.initSDK()
-    },
+  // 输入邮箱
+  inputEmail(e: any) {
+    this.setData({ email: e.detail.value });
+  },
 
-    // 输入邮箱
-    inputEmail(e: any) {
-        this.setData({ email: e.detail.value })
-    },
+  // 输入验证码
+  inputCode(e: any) {
+    this.setData({ code: e.detail.value });
+  },
 
-    // 输入验证码
-    inputCode(e: any) {
-        this.setData({ code: e.detail.value })
-    },
+  // 输入auth_token
+  inputAuthToken(e: any) {
+    this.setData({ auth_token: e.detail.value });
+  },
 
-    // 输入auth_token
-    inputAuthToken(e: any) {
-        this.setData({ auth_token: e.detail.value })
-    },
+  // 输入appkey
+  inputAppKey(e: any) {
+    this.setData({ app_key: e.detail.value });
+  },
 
-    // 输入appkey
-    inputAppKey(e: any) {
-        this.setData({ app_key: e.detail.value })
-    },
+  // 获取验证码
+  async getCode() {
+    const { email } = this.data;
+    const res = await VationXSDK.getLoginCode(email);
+    console.log("获取验证码：", res); // 成功：'success'，失败：返回错误信息。
+  },
 
-    // 获取验证码
-    getCode() {
-        const { email } = this.data
-        VationSDK.authorizeWithEmail({
-            email: email,
-            success() { wx.hideLoading({ complete: () => { wx.showToast({ title: "验证码已发送", }) } }) },
-            fail() { wx.hideLoading({ complete: () => { wx.showToast({ title: "验证码发送失败", }) } }) },
-        });
-    },
+  // 验证码登录
+  async codeLogin() {
+    const { email, code } = this.data;
+    const res = await VationXSDK.codeLogin(email, code);
+    console.log("验证码登录：", res); // 成功：'success'，失败：后端报错返回具体报错信息，其它报错返回‘fail'。
+  },
 
-    // 验证码登录
-    codeLogin() {
-        const { code } = this.data
-        VationSDK.loginWithCode({
-            code,
-            success() { wx.showToast({ title: "登录成功" }) },
-            fail() { wx.showToast({ title: "登录失败" }) },
-        });
-    },
+  // 第三方登录
+  async thirdPartyLogin() {
+    const { app_key, auth_token } = this.data;
+    const res = await VationXSDK.thirdPartyLogin(app_key, auth_token);
+    console.log("第三方登录：", res); // 成功：'success'，失败：后端报错返回具体报错信息，其它报错返回‘fail'。
+  },
 
-    // 第三方登录
-    thirdPartyLogin() {
-        const { app_key, auth_token } = this.data
-        console.log(app_key, 'app_key');
-        console.log(auth_token, 'auth_token');
-        VationSDK.thirdPartyLogin({
-            auth_token,
-            authorization: app_key,
-            success() { wx.showToast({ title: "登录成功" }) },
-            fail() { wx.showToast({ title: "登录失败" }) },
-        });
-    },
+  // 刷新token
+  async refreshToken() {
+    const res = await VationXSDK.refreshToken(); // 短信登录，直接刷新
+    // const res = await VationXSDK.refreshToken(app_key) // 第三方登录，需要传入app_key
+    console.log("刷新token：", res); // 成功：'success'，失败：后端报错返回具体报错信息，其它报错返回‘fail'。
+  },
 
-    // 刷新token
-    refreshToken() {
-        VationSDK.refreshToken({
-            success() { wx.showToast({ title: "刷新成功" }) },
-            fail() { wx.showToast({ title: "刷新失败" }) },
-        });
-    },
+  // 检查登录状态
+  async checkLogin() {
+    const res = await VationXSDK.checkLogin();
+    console.log("检查登录状态：", res); // true | false
+  },
 
-    // 检查登录状态
-    checkLogin() {
-        const loginStatus = VationSDK.isLogin()
-        wx.showToast({ title: loginStatus ? "已登录" : "未登录" })
-    },
+  // 获取用户信息
+  getUser() {
+    const res = VationXSDK.getUserInfo();
+    console.log("用户信息：", res); // 在initSDK成功后再调用，成功：对应用户信息，失败：'fail'。
+  },
 
-    // 获取用户信息
-    getUser() {
-        const user = VationSDK.getUser()
-        console.log(user, 'user');
-    },
-
+  // 开启蓝牙服务并扫描周边设备
+  async openBlueTooth() {
     // 开启蓝牙服务
-    openBlueTooth() {
-        console.log('开启蓝牙');
-        let { readerList } = this.data
-        const _this = this
-        readerList = {}
-        this.setData({ readers: [] })
-        VationSDK.onReadersInRange({
-            callback(res: any) {
-                readerList[res.fixtureId] = res
-                let readers = []
-                for (let i in readerList) {
-                    readers.push(readerList[i]);
-                }
-                _this.setData({ readers: readers as any })
-            },
-        });
+    const res = await VationXSDK.startBlueToothScan();
+    console.log("开启蓝牙服务：", res); // 成功：'success'，失败：如果是微信端报错返回具体报错信息，其它报错会提示对应错误。
 
-        VationSDK.startBleScan({
-            success(res: any) { console.info("开始扫描蓝牙设备", res) },
-            fail(res: any) { console.error("开始扫描蓝牙设备失败", res) },
-        });
-    },
+    // 扫描附近可用读卡器，返回有权限的读卡器列表，频率较高，可根据根据业务需求做节流处理。
+    VationXSDK.getReadersInRange((readerList: any) => {
+      console.log(readerList, "readerList");
+      this.setData({ readerList });
+    });
+  },
 
-    // 关闭蓝牙服务
-    closeBlueTooth() {
-        this.setData({ readers: [], readerList: {} })
-        VationSDK.stopBleScan()
-        wx.showToast({ title: "关闭蓝牙服务" })
-    },
-
-    // 开门
-    unlock(event: any) {
-        let dataset = event.currentTarget.dataset;
-        VationSDK.unlock({
-            fixtureId: dataset.id,
-            success(res: any) { console.log(res, '开门成功') },
-            fail(res: any) { console.error(res, '开门失败') },
-        });
+  // 关闭蓝牙服务
+  async closeBlueTooth() {
+    const res = await VationXSDK.stopBlueToothScan(); // 成功：'success'，失败：如果是微信端报错返回具体报错信息，其它报错会提示对应错误。
+    if (res === "success") {
+      this.setData({ readerList: [] });
     }
+  },
 
-})
+  // 开门
+  async unlock(event: any) {
+    const id = event.currentTarget.dataset.id;
+    const res = await VationXSDK.unlock(id);
+    console.log("开门：", res); // 成功：'success'，失败：如果是微信端报错返回具体报错信息，其它报错会提示对应错误。
+  },
+});
