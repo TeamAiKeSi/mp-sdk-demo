@@ -2,8 +2,8 @@ const app = getApp<IAppOption>();
 const VationXSDK = requirePlugin("vation-mp-plugin");
 Page({
     data: {
-        email: "zekun@vationx.com",
-        code: "828466",
+        email: "",
+        code: "",
         auth_token: "",
         app_key: "",
         userInfo: {},
@@ -67,6 +67,12 @@ Page({
         console.log("刷新token：", res); // 成功：'success'，失败：后端报错返回具体报错信息，其它报错返回‘fail'。
     },
 
+    // 刷新权限
+    async refreshPermission() {
+        const res = await VationXSDK.refreshPermission();
+        console.log("刷新权限：", res);
+    },
+
     // 检查登录状态
     async checkLogin() {
         const res = await VationXSDK.checkLogin();
@@ -107,10 +113,10 @@ Page({
         const res = await VationXSDK.unlock(id);
         console.log("开门：", res); // 成功：'success'，失败：如果是微信端报错返回具体报错信息，其它报错会提示对应错误。
         if (res.errCode === 10008) {
-            await VationXSDK.stopBlueToothScan()
-            await VationXSDK.refreshPermission()
-            await this.openBlueTooth()
-            await VationXSDK.retryUnlock(id) // 重试开门，成功会返回 success 超时返回 timeout 失败返回对应错误。
-          }
+            await VationXSDK.stopBlueToothScan();
+            await VationXSDK.refreshPermission();
+            await this.openBlueTooth();
+            await VationXSDK.retryUnlock(id); // 重试开门，成功会返回 success 超时返回 timeout 失败返回对应错误。
+        }
     },
 });
