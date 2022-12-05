@@ -10,7 +10,7 @@
   },
   "plugins": {
     "vation-mp-plugin": {
-      "version": "dev-a3ab51319e108284dd3925016216b4c4",
+      "version": "2.0.1",
       "provider": "wxd96719ab77400d1a"
     }
   },

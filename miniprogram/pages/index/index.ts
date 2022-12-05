@@ -8,6 +8,7 @@ Page({
         app_key: "",
         userInfo: {},
         readerList: [],
+        log: ''
     },
 
     onLoad() {
@@ -43,6 +44,7 @@ Page({
     async getCode() {
         const { email } = this.data;
         const res = await VationXSDK.getLoginCode(email);
+        this.setData({ log: JSON.stringify(res) });
         console.log("获取验证码：", res); // 成功：'success'，失败：返回错误信息。
     },
 
@@ -50,6 +52,7 @@ Page({
     async codeLogin() {
         const { email, code } = this.data;
         const res = await VationXSDK.codeLogin(email, code);
+        this.setData({ log: JSON.stringify(res) });
         console.log("验证码登录：", res); // 成功：'success'，失败：后端报错返回具体报错信息，其它报错返回‘fail'。
     },
 
@@ -57,31 +60,38 @@ Page({
     async thirdPartyLogin() {
         const { app_key, auth_token } = this.data;
         const res = await VationXSDK.thirdPartyLogin(app_key, auth_token);
+        this.setData({ log: JSON.stringify(res) });
         console.log("第三方登录：", res); // 成功：'success'，失败：后端报错返回具体报错信息，其它报错返回‘fail'。
     },
 
     // 刷新token
     async refreshToken() {
-        const res = await VationXSDK.refreshToken(); // 短信登录，直接刷新
+        const { app_key } = this.data;
+        const res = await VationXSDK.refreshToken(app_key || ''); // 短信登录，直接刷新
+        // const res = await VationXSDK.refreshToken(); // 短信登录，直接刷新
         // const res = await VationXSDK.refreshToken(app_key) // 第三方登录，需要传入app_key
+        this.setData({ log: JSON.stringify(res) });
         console.log("刷新token：", res); // 成功：'success'，失败：后端报错返回具体报错信息，其它报错返回‘fail'。
     },
 
     // 刷新权限
     async refreshPermission() {
         const res = await VationXSDK.refreshPermission();
+        this.setData({ log: JSON.stringify(res) });
         console.log("刷新权限：", res);
     },
 
     // 检查登录状态
     async checkLogin() {
         const res = await VationXSDK.checkLogin();
+        this.setData({ log: JSON.stringify(res) });
         console.log("检查登录状态：", res); // true | false
     },
 
     // 获取用户信息
     getUser() {
         const res = VationXSDK.getUserInfo();
+        this.setData({ log: JSON.stringify(res.email) });
         console.log("用户信息：", res); // 在initSDK成功后再调用，成功：对应用户信息，失败：'fail'。
     },
 
@@ -89,11 +99,13 @@ Page({
     async openBlueTooth() {
         // 开启蓝牙服务
         const res = await VationXSDK.startBlueToothScan();
+        this.setData({ log: JSON.stringify(res) });
         console.log("开启蓝牙服务：", res); // 成功：'success'，失败：如果是微信端报错返回具体报错信息，其它报错会提示对应错误。
 
         // 扫描附近可用读卡器，返回有权限的读卡器列表，频率较高，可根据根据业务需求做节流处理。
         VationXSDK.getReadersInRange((readerList: any) => {
             console.log(readerList, "readerList");
+            this.setData({ log: JSON.stringify(readerList) });
             this.setData({ readerList });
         });
     },
@@ -101,6 +113,7 @@ Page({
     // 关闭蓝牙服务
     async closeBlueTooth() {
         const res = await VationXSDK.stopBlueToothScan(); // 成功：'success'，失败：如果是微信端报错返回具体报错信息，其它报错会提示对应错误。
+        this.setData({ log: JSON.stringify(res) });
         console.log("关闭蓝牙服务：", res);
         if (res.errCode === 0) {
             this.setData({ readerList: [] });
@@ -111,6 +124,7 @@ Page({
     async unlock(event: any) {
         const id = event.currentTarget.dataset.id;
         const res = await VationXSDK.unlock(id);
+        this.setData({ log: JSON.stringify(res) });
         console.log("开门：", res); // 成功：'success'，失败：如果是微信端报错返回具体报错信息，其它报错会提示对应错误。
         if (res.errCode === 10008) {
             await VationXSDK.stopBlueToothScan();

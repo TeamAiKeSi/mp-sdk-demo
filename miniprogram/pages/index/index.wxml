@@ -16,20 +16,27 @@
             <text>app_key：</text>
             <input value="{{app_key}}" placeholder="请输入app_key" bindinput="inputAppKey" />
         </view>
+
+
+
     </view>
     <button bindtap="getCode">获取验证码</button>
     <button bindtap="codeLogin">验证码登录</button>
     <button bindtap="thirdPartyLogin">第三方登录</button>
     <button bindtap="refreshToken">刷新token</button>
+    <button bindtap="refreshPermission">刷新权限</button>
     <button bindtap="checkLogin">检查登录状态</button>
     <button bindtap="getUser">获取用户信息</button>
     <button bindtap="openBlueTooth">开启蓝牙服务</button>
     <button bindtap="closeBlueTooth">关闭蓝牙服务</button>
-
     <view wx:for="{{readerList}}" wx:key="index">
         <view>
             <view>{{item.reader.name}}</view>
             <button data-id="{{item.deviceId}}" bindtap="unlock">开门</button>
         </view>
+    </view>
+    <view>
+        <text>日志：</text>
+        <text style="word-wrap: break-word;">{{log}}</text>
     </view>
 </view>
